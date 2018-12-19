@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="SimpleLoader">
+        <attr name="loader_border_width" format="dimension"/>
+    </declare-styleable>
+
+</resources>
