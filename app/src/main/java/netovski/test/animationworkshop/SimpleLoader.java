@@ -1,5 +1,7 @@
 package netovski.test.animationworkshop;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -7,8 +9,10 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.animation.LinearOutSlowInInterpolator;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.animation.LinearInterpolator;
 
 
 public class SimpleLoader extends View {
@@ -17,7 +21,6 @@ public class SimpleLoader extends View {
     private Paint mFillPaint = new Paint();
     private RectF bounds = new RectF();
 
-    ValueAnimator progressAnimator;
     ValueAnimator bounceAnimatior;
 
     private final float radiusDelta = 0.17f;
@@ -59,7 +62,6 @@ public class SimpleLoader extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        canvas.drawArc(bounds, 0, 360f, false, mBackgroundPaint);
         canvas.drawArc(bounds, startProgress, progress, false, mFillPaint);
     }
 
@@ -86,13 +88,12 @@ public class SimpleLoader extends View {
 
         mBackgroundPaint.setStyle(Paint.Style.STROKE);
         mFillPaint.setStyle(Paint.Style.STROKE);
-        // TODO Change to dp
+
         mBackgroundPaint.setStrokeWidth(10f);
         mFillPaint.setStrokeWidth(10f);
     }
 
     public void bounce(){
-
         bounceAnimatior = ValueAnimator.ofFloat(1.0f, 0.8f, 0.26f, 0.89f);
 
         bounceAnimatior.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
@@ -126,18 +127,31 @@ public class SimpleLoader extends View {
     }
 
     public void startProgressAnimation() {
-        progressAnimator = progressAnimator.ofFloat(0f, 360f);
-
-        progressAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+        final ValueAnimator animator = ValueAnimator.ofFloat(0, 360);
+        animator.setDuration(5000);
+        animator.setInterpolator(new LinearInterpolator());
+        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
-                progress = (float) animation.getAnimatedValue();
+                startProgress = (Float) animation.getAnimatedValue();
+                progress += 2f;
+                if (progress > 360){
+                    progress = 15f;
+                }
+
                 postInvalidate();
             }
         });
+        animator.start();
+        animator.setRepeatCount(ValueAnimator.INFINITE);
 
-        progressAnimator.setDuration(5000);
-        progressAnimator.start();
+        animator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                super.onAnimationEnd(animation);
+                animator.setRepeatMode(ValueAnimator.REVERSE);
+            }
+        });
     }
 
     public void initWithXml(Context context, AttributeSet attrs) {
