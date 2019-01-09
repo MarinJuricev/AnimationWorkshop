@@ -128,7 +128,7 @@ public class SimpleLoader extends View {
 
     public void startProgressAnimation() {
         final ValueAnimator animator = ValueAnimator.ofFloat(0, 360);
-        animator.setDuration(5000);
+        animator.setDuration(2000);
         animator.setInterpolator(new LinearInterpolator());
         animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
@@ -138,6 +138,14 @@ public class SimpleLoader extends View {
                 if (progress > 360){
                     progress = 15f;
                 }
+
+                /**
+                 * |progress - startProgress| < 20 ( proizvoljno, igraj se s ovim )
+                 *      progress ide brze
+                 * inace
+                 *     startProgress ubrzati
+                 *
+                 */
 
                 postInvalidate();
             }
